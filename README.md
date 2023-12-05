@@ -4,18 +4,21 @@
 ```xml
   <dependency>
     <groupId>io.github.wf4java</groupId>
-    <artifactId>WF-ChatGptApi</artifactId>
+    <artifactId>WF-TelegramBotApi</artifactId>
     <version>1.0</version>
   </dependency>
 ```
 
-## Examples:
+## Example:
 
-### Create and generate:
 ```java
-ChatGpt gpt = new ChatGpt("api-key");
+TelegramBot telegramBot = new TelegramBot("username","token");
 
-String result1 = gpt.ask("Say hello in 10 languages"); // 2048 tokens, model: GPT_3_5_TURBO_1106
-String result2 = gpt.ask("Say hello in 10 languages", 512); // 512 tokens, model: GPT_3_5_TURBO_1106
+telegramBot.addHandler(new MessageHandler() {
+    @Override
+    public void onTextMessage(String text, Long chatId, Sender sender, Update update) {
+        sender.sendMessage(chatId, text);
+    }
+});
 ```
 ㅤ
