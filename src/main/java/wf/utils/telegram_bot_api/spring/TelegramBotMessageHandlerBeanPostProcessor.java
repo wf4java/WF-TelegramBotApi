@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -28,6 +29,7 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
     private final ArrayList<Handler> callbackQueryHandlers = new ArrayList<>();
 
 
+    @Lazy
     public TelegramBotMessageHandlerBeanPostProcessor(TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
         telegramBot.addHandler(new MessageHandler() {
