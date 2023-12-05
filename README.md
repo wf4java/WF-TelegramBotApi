@@ -5,7 +5,7 @@
   <dependency>
     <groupId>io.github.wf4java</groupId>
     <artifactId>WF-TelegramBotApi</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
   </dependency>
 ```
 
@@ -16,7 +16,7 @@ TelegramBot telegramBot = new TelegramBot("username", "token");
 
 telegramBot.addHandler(new MessageHandler() {
     @Override
-    public void onTextMessage(String text, Long chatId, Sender sender, Update update) {
+    public void onTextMessage(String text, Long chatId, Message message, Sender sender, Update update) {
         sender.deleteMessage(chatId, update.getMessage().getMessageId());
         sender.sendMessage(chatId, text);
     }

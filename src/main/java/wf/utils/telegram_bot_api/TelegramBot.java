@@ -79,11 +79,17 @@ public class TelegramBot {
     private void update(Update update) {
         messageHandlers.forEach(h -> {h.onUpdate(update, sender);});
 
+
+
+        if(update.hasCallbackQuery())
+            messageHandlers.forEach(h -> {h.onCallbackQuery(update.getCallbackQuery(), update.getCallbackQuery().getMessage().getChatId(),
+                    update.getCallbackQuery().getMessage(), sender, update);});
+
         if(!update.hasMessage()) return;
         Message message = update.getMessage();
 
         if(message.hasText())
-            messageHandlers.forEach(h -> {h.onTextMessage(message.getText(), message.getChatId(), sender, update);});
+            messageHandlers.forEach(h -> {h.onTextMessage(message.getText(), message.getChatId(), message, sender, update);});
 
     }
 
