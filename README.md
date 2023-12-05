@@ -12,11 +12,12 @@
 ## Example:
 
 ```java
-TelegramBot telegramBot = new TelegramBot("username","token");
+TelegramBot telegramBot = new TelegramBot("username", "token");
 
 telegramBot.addHandler(new MessageHandler() {
     @Override
     public void onTextMessage(String text, Long chatId, Sender sender, Update update) {
+        sender.deleteMessage(chatId, update.getMessage().getMessageId());
         sender.sendMessage(chatId, text);
     }
 });
