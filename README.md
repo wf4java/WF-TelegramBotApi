@@ -5,7 +5,7 @@
   <dependency>
     <groupId>io.github.wf4java</groupId>
     <artifactId>WF-TelegramBotApi</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
   </dependency>
 ```
 
