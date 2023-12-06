@@ -17,6 +17,7 @@ import wf.utils.telegram_bot_api.spring.annotation.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProcessor {
@@ -78,16 +79,18 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
 
     private static void invoke(Handler handler, Object... objects) {
         Class<?>[] parameterTypes = handler.getMethod().getParameterTypes();
-        Object[] args = new Object[parameterTypes.length];
+        List<Object> args = new ArrayList<>();
 
         for (int i = 0; i < parameterTypes.length; i++) {
-            if (i < objects.length && parameterTypes[i].isInstance(objects[i])) {args[i] = objects[i];}
-            else {args[i] = null;}
+            Class<?> parameterType = parameterTypes[i];
+            for (Object object : objects) { if (parameterType.isInstance(object)) { args.add(object); break; } }
+            if (args.size() <= i) { args.add(null); }
         }
 
-        try {handler.getMethod().invoke(handler.getObj(), args);}
+        try { handler.getMethod().invoke(handler.getObj(), args.toArray()); }
         catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}
     }
+
 
 
     @Data
