@@ -3,6 +3,7 @@ package wf.utils.telegram_bot_api.models;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
@@ -35,12 +36,16 @@ public abstract class Sender extends TelegramLongPollingBot {
     public abstract CompletableFuture<Message> sendMessageReplyAsync(Long chatId, int replyId, String text);
 
 
-    public abstract Message editMessage(Long chatId, int messageId, String newText);
+    public abstract Message editMessageText(Long chatId, int messageId, String newText);
 
-    public abstract CompletableFuture<Serializable> editMessageAsync(Long chatId, int messageId, String newText);
+    public abstract CompletableFuture<Serializable> editMessageTextAsync(Long chatId, int messageId, String newText);
 
     public abstract Boolean deleteMessage(Long chatId, int messageId);
 
     public abstract CompletableFuture<Boolean> deleteMessageAsync(Long chatId, int messageId);
+
+    public abstract Message editMessageReplyMarkup(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard);
+
+    public abstract CompletableFuture<Serializable> editMessageReplyMarkupAsync(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard);
 
 }

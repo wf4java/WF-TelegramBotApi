@@ -3,9 +3,11 @@ package wf.utils.telegram_bot_api.models;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
@@ -85,7 +87,7 @@ public class BotDataHandler extends Sender {
 
     @SneakyThrows
     @Override
-    public Message editMessage(Long chatId, int messageId, String newText) {
+    public Message editMessageText(Long chatId, int messageId, String newText) {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(chatId);
         editMessage.setMessageId(messageId);
@@ -95,7 +97,7 @@ public class BotDataHandler extends Sender {
 
     @SneakyThrows
     @Override
-    public CompletableFuture<Serializable> editMessageAsync(Long chatId, int messageId, String newText) {
+    public CompletableFuture<Serializable> editMessageTextAsync(Long chatId, int messageId, String newText) {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(chatId);
         editMessage.setMessageId(messageId);
@@ -119,6 +121,26 @@ public class BotDataHandler extends Sender {
         deleteMessage.setChatId(chatId);
         deleteMessage.setMessageId(messageId);
         return executeAsync(deleteMessage);
+    }
+
+    @SneakyThrows
+    @Override
+    public Message editMessageReplyMarkup(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
+        EditMessageReplyMarkup editMessage = new EditMessageReplyMarkup();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(messageId);
+        editMessage.setReplyMarkup(replyKeyboard);
+        return (Message) execute(editMessage);
+    }
+
+    @SneakyThrows
+    @Override
+    public CompletableFuture<Serializable> editMessageReplyMarkupAsync(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
+        EditMessageReplyMarkup editMessage = new EditMessageReplyMarkup();
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(messageId);
+        editMessage.setReplyMarkup(replyKeyboard);
+        return executeAsync(editMessage);
     }
 
 }
