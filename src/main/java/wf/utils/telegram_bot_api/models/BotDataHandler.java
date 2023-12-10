@@ -17,8 +17,8 @@ public class BotDataHandler extends Sender {
 
     private final String botUsername;
 
-    private Consumer<Update> updateHandler;
-    private Runnable closingHandler;
+    private final Consumer<Update> updateHandler;
+    private final Runnable closingHandler;
 
 
     public BotDataHandler(String botUsername, String botToken, Consumer<Update> updateHandler, Runnable closingHandler) {

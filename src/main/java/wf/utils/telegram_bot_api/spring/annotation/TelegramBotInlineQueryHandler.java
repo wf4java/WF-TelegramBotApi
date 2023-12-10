@@ -4,6 +4,6 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface TelegramBotCallbackQueryHandler {
+public @interface TelegramBotInlineQueryHandler {
 
 }

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Lazy;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import wf.utils.telegram_bot_api.TelegramBot;
 import wf.utils.telegram_bot_api.models.MessageHandler;
 import wf.utils.telegram_bot_api.models.Sender;
@@ -28,6 +29,8 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
     private final ArrayList<Handler> messageHandlers = new ArrayList<>();
     private final ArrayList<Handler> textMessageHandlers = new ArrayList<>();
     private final ArrayList<Handler> callbackQueryHandlers = new ArrayList<>();
+    private final ArrayList<Handler> callbackInlineQueryHandlers = new ArrayList<>();
+    private final ArrayList<Handler> inlineQueryHandlers = new ArrayList<>();
 
 
     @Lazy
@@ -51,6 +54,20 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
                 for(Handler h : callbackQueryHandlers)
                     invoke(h, callbackQuery, chatId, message, sender, update);
             }
+
+            @Override
+            public void onCallbackInlineQuery(CallbackQuery callbackQuery, Long senderId, String inlineMessageId, Sender sender, Update update) {
+                for(Handler h : callbackInlineQueryHandlers)
+                    invoke(h, callbackQuery, senderId, inlineMessageId, sender, update);
+            }
+
+            @Override
+            public void onInlineQuery(InlineQuery inlineQuery, Long senderId, Sender sender, Update update) {
+                for(Handler h : inlineQueryHandlers)
+                    invoke(h, inlineQuery, senderId, sender, update);
+            }
+
+
         });
     }
 
@@ -69,6 +86,12 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
 
                 if (method.isAnnotationPresent(TelegramBotCallbackQueryHandler.class))
                     callbackQueryHandlers.add(new Handler(bean, method));
+
+                if (method.isAnnotationPresent(TelegramBotCallbackInlineQueryHandler.class))
+                    callbackInlineQueryHandlers.add(new Handler(bean, method));
+
+                if (method.isAnnotationPresent(TelegramBotInlineQueryHandler.class))
+                    inlineQueryHandlers.add(new Handler(bean, method));
 
             }
         }

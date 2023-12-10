@@ -5,8 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -79,11 +81,21 @@ public class TelegramBot {
     private void update(Update update) {
         messageHandlers.forEach(h -> {h.onUpdate(update, sender);});
 
+        if(update.hasCallbackQuery()) {
+            CallbackQuery callbackQuery = update.getCallbackQuery();
+            if(callbackQuery.getMessage() != null)
+                messageHandlers.forEach(h -> {h.onCallbackQuery(update.getCallbackQuery(),
+                        update.getCallbackQuery().getMessage().getChatId(),
+                        update.getCallbackQuery().getMessage(), sender, update);});
 
+            else if(callbackQuery.getData()!= null)
+                messageHandlers.forEach(h -> {h.onCallbackInlineQuery(update.getCallbackQuery(),
+                        update.getCallbackQuery().getFrom().getId(),
+                        update.getCallbackQuery().getInlineMessageId(), sender, update);});
+        }
 
-        if(update.hasCallbackQuery())
-            messageHandlers.forEach(h -> {h.onCallbackQuery(update.getCallbackQuery(), update.getCallbackQuery().getMessage().getChatId(),
-                    update.getCallbackQuery().getMessage(), sender, update);});
+        if(update.hasInlineQuery())
+            messageHandlers.forEach(h -> {h.onInlineQuery(update.getInlineQuery(), update.getInlineQuery().getFrom().getId(), sender, update);});
 
         if(!update.hasMessage()) return;
         Message message = update.getMessage();
