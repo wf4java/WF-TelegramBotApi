@@ -48,4 +48,8 @@ public abstract class Sender extends TelegramLongPollingBot {
 
     public abstract CompletableFuture<Serializable> editMessageReplyMarkupAsync(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard);
 
+    public abstract Message forwardMessage(Long chatId, Long fromChatId, int messageId);
+
+    public abstract CompletableFuture<Message> forwardMessageAsync(Long chatId, Long fromChatId, int messageId);
+
 }

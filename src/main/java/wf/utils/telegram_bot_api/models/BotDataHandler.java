@@ -1,6 +1,7 @@
 package wf.utils.telegram_bot_api.models;
 
 import lombok.SneakyThrows;
+import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -141,6 +142,26 @@ public class BotDataHandler extends Sender {
         editMessage.setMessageId(messageId);
         editMessage.setReplyMarkup(replyKeyboard);
         return executeAsync(editMessage);
+    }
+
+    @SneakyThrows
+    @Override
+    public Message forwardMessage(Long chatId, Long fromChatId, int messageId) {
+        ForwardMessage forwardMessage = new ForwardMessage();
+        forwardMessage.setChatId(chatId);
+        forwardMessage.setFromChatId(fromChatId);
+        forwardMessage.setMessageId(messageId);
+        return execute(forwardMessage);
+    }
+
+    @SneakyThrows
+    @Override
+    public CompletableFuture<Message> forwardMessageAsync(Long chatId, Long fromChatId, int messageId) {
+        ForwardMessage forwardMessage = new ForwardMessage();
+        forwardMessage.setChatId(chatId);
+        forwardMessage.setFromChatId(fromChatId);
+        forwardMessage.setMessageId(messageId);
+        return executeAsync(forwardMessage);
     }
 
 }
