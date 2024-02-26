@@ -17,8 +17,8 @@ TelegramBot telegramBot = new TelegramBot("username", "token");
 telegramBot.addHandler(new MessageHandler() {
     @Override
     public void onTextMessage(String text, Long chatId, Message message, BotExecutor botExecutor, Update update) {
-        sender.deleteMessage(chatId, message.getMessageId());
-        sender.sendMessage(chatId, text);
+        botExecutor.deleteMessage(chatId, message.getMessageId());
+        botExecutor.sendMessage(chatId, text);
     }
 });
 ```
