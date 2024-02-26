@@ -8,13 +8,12 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.BotSession;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import wf.utils.telegram_bot_api.models.BotDataHandler;
+import wf.utils.telegram_bot_api.models.BotExecutor;
 import wf.utils.telegram_bot_api.models.MessageHandler;
-import wf.utils.telegram_bot_api.models.Sender;
+
 
 import java.util.ArrayList;
 
@@ -31,7 +30,7 @@ public class TelegramBot {
 
 
     private final BotSession botSession;
-    private final Sender sender;
+    private final BotExecutor botExecutor;
 
     @Setter
     private boolean autoRestartOnFail;
@@ -50,8 +49,8 @@ public class TelegramBot {
 
     @SneakyThrows
     public TelegramBot(String botUsername, String botToken, boolean autoRestartOnFail) {
-        this.sender = new BotDataHandler(botUsername, botToken, this::update, this::closing);
-        this.botSession = api.registerBot(sender);
+        this.botExecutor = new BotExecutor(botUsername, botToken, this::update, this::closing);
+        this.botSession = api.registerBot(botExecutor);
         this.autoRestartOnFail = autoRestartOnFail;
     }
 
@@ -79,29 +78,29 @@ public class TelegramBot {
 
 
     private void update(Update update) {
-        messageHandlers.forEach(h -> {h.onUpdate(update, sender);});
+        messageHandlers.forEach(h -> {h.onUpdate(update, botExecutor);});
 
         if(update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             if(callbackQuery.getMessage() != null)
                 messageHandlers.forEach(h -> {h.onCallbackQuery(update.getCallbackQuery(),
                         update.getCallbackQuery().getMessage().getChatId(),
-                        update.getCallbackQuery().getMessage(), sender, update);});
+                        update.getCallbackQuery().getMessage(), botExecutor, update);});
 
             else if(callbackQuery.getData()!= null)
                 messageHandlers.forEach(h -> {h.onCallbackInlineQuery(update.getCallbackQuery(),
                         update.getCallbackQuery().getFrom().getId(),
-                        update.getCallbackQuery().getInlineMessageId(), sender, update);});
+                        update.getCallbackQuery().getInlineMessageId(), botExecutor, update);});
         }
 
         if(update.hasInlineQuery())
-            messageHandlers.forEach(h -> {h.onInlineQuery(update.getInlineQuery(), update.getInlineQuery().getFrom().getId(), sender, update);});
+            messageHandlers.forEach(h -> {h.onInlineQuery(update.getInlineQuery(), update.getInlineQuery().getFrom().getId(), botExecutor, update);});
 
         if(!update.hasMessage()) return;
         Message message = update.getMessage();
 
         if(message.hasText())
-            messageHandlers.forEach(h -> {h.onTextMessage(message.getText(), message.getChatId(), message, sender, update);});
+            messageHandlers.forEach(h -> {h.onTextMessage(message.getText(), message.getChatId(), message, botExecutor, update);});
 
     }
 

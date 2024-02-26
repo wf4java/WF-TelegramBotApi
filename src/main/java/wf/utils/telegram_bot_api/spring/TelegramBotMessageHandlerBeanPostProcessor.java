@@ -11,8 +11,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import wf.utils.telegram_bot_api.TelegramBot;
+import wf.utils.telegram_bot_api.models.BotExecutor;
 import wf.utils.telegram_bot_api.models.MessageHandler;
-import wf.utils.telegram_bot_api.models.Sender;
 import wf.utils.telegram_bot_api.spring.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,33 +38,33 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
         this.telegramBot = telegramBot;
         telegramBot.addHandler(new MessageHandler() {
             @Override
-            public void onTextMessage(String text, Long chatId, Message message, Sender sender, Update update) {
+            public void onTextMessage(String text, Long chatId, Message message, BotExecutor botExecutor, Update update) {
                 for(Handler h : textMessageHandlers)
-                    invoke(h, text, chatId, message, sender, update);
+                    invoke(h, text, chatId, message, botExecutor, update);
             }
 
             @Override
-            public void onUpdate(Update update, Sender sender) {
+            public void onUpdate(Update update, BotExecutor botExecutor) {
                 for(Handler h : messageHandlers)
-                    invoke(h, update, sender);
+                    invoke(h, update, botExecutor);
             }
 
             @Override
-            public void onCallbackQuery(CallbackQuery callbackQuery, Long chatId, Message message, Sender sender, Update update) {
+            public void onCallbackQuery(CallbackQuery callbackQuery, Long chatId, Message message, BotExecutor botExecutor, Update update) {
                 for(Handler h : callbackQueryHandlers)
-                    invoke(h, callbackQuery, chatId, message, sender, update);
+                    invoke(h, callbackQuery, chatId, message, botExecutor, update);
             }
 
             @Override
-            public void onCallbackInlineQuery(CallbackQuery callbackQuery, Long senderId, String inlineMessageId, Sender sender, Update update) {
+            public void onCallbackInlineQuery(CallbackQuery callbackQuery, Long senderId, String inlineMessageId, BotExecutor botExecutor, Update update) {
                 for(Handler h : callbackInlineQueryHandlers)
-                    invoke(h, callbackQuery, senderId, inlineMessageId, sender, update);
+                    invoke(h, callbackQuery, senderId, inlineMessageId, botExecutor, update);
             }
 
             @Override
-            public void onInlineQuery(InlineQuery inlineQuery, Long senderId, Sender sender, Update update) {
+            public void onInlineQuery(InlineQuery inlineQuery, Long senderId, BotExecutor botExecutor, Update update) {
                 for(Handler h : inlineQueryHandlers)
-                    invoke(h, inlineQuery, senderId, sender, update);
+                    invoke(h, inlineQuery, senderId, botExecutor, update);
             }
 
 

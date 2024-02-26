@@ -1,6 +1,7 @@
 package wf.utils.telegram_bot_api.models;
 
 import lombok.SneakyThrows;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -14,7 +15,7 @@ import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class BotDataHandler extends Sender {
+public class BotExecutor extends TelegramLongPollingBot {
 
     private final String botUsername;
 
@@ -22,7 +23,7 @@ public class BotDataHandler extends Sender {
     private final Runnable closingHandler;
 
 
-    public BotDataHandler(String botUsername, String botToken, Consumer<Update> updateHandler, Runnable closingHandler) {
+    public BotExecutor(String botUsername, String botToken, Consumer<Update> updateHandler, Runnable closingHandler) {
         super(botToken);
         this.botUsername = botUsername;
         this.updateHandler = updateHandler;
@@ -49,7 +50,6 @@ public class BotDataHandler extends Sender {
 
 
     @SneakyThrows
-    @Override
     public Message sendMessage(Long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
@@ -58,7 +58,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public CompletableFuture<Message> sendMessageAsync(Long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
@@ -67,7 +66,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public Message sendMessageReply(Long chatId, int replyId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
@@ -77,7 +75,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public CompletableFuture<Message> sendMessageReplyAsync(Long chatId, int replyId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
@@ -87,7 +84,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public Message editMessageText(Long chatId, int messageId, String newText) {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(chatId);
@@ -97,7 +93,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public CompletableFuture<Serializable> editMessageTextAsync(Long chatId, int messageId, String newText) {
         EditMessageText editMessage = new EditMessageText();
         editMessage.setChatId(chatId);
@@ -107,7 +102,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public Boolean deleteMessage(Long chatId, int messageId) {
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(chatId);
@@ -116,7 +110,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public CompletableFuture<Boolean> deleteMessageAsync(Long chatId, int messageId) {
         DeleteMessage deleteMessage = new DeleteMessage();
         deleteMessage.setChatId(chatId);
@@ -125,7 +118,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public Message editMessageReplyMarkup(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
         EditMessageReplyMarkup editMessage = new EditMessageReplyMarkup();
         editMessage.setChatId(chatId);
@@ -135,7 +127,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public CompletableFuture<Serializable> editMessageReplyMarkupAsync(Long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
         EditMessageReplyMarkup editMessage = new EditMessageReplyMarkup();
         editMessage.setChatId(chatId);
@@ -145,7 +136,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public Message forwardMessage(Long chatId, Long fromChatId, int messageId) {
         ForwardMessage forwardMessage = new ForwardMessage();
         forwardMessage.setChatId(chatId);
@@ -155,7 +145,6 @@ public class BotDataHandler extends Sender {
     }
 
     @SneakyThrows
-    @Override
     public CompletableFuture<Message> forwardMessageAsync(Long chatId, Long fromChatId, int messageId) {
         ForwardMessage forwardMessage = new ForwardMessage();
         forwardMessage.setChatId(chatId);
