@@ -97,10 +97,12 @@ public class TelegramBot {
             messageHandlers.forEach(h -> {h.onInlineQuery(update.getInlineQuery(), update.getInlineQuery().getFrom().getId(), botExecutor, update);});
 
         if(!update.hasMessage()) return;
+
         Message message = update.getMessage();
 
-        if(message.hasText())
-            messageHandlers.forEach(h -> {h.onTextMessage(message.getText(), message.getChatId(), message, botExecutor, update);});
+        if(message.hasText() || (message.getCaption() != null && !message.getCaption().isEmpty()))
+            messageHandlers.forEach(h -> {h.onTextMessage((message.hasText() ? message.getText() : message.getCaption()),
+                    message.getChatId(), message, botExecutor, update);});
 
     }
 

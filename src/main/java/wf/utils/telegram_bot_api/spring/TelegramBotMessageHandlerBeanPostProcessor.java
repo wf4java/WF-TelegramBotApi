@@ -6,9 +6,7 @@ import lombok.Getter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Lazy;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
 import wf.utils.telegram_bot_api.TelegramBot;
 import wf.utils.telegram_bot_api.models.BotExecutor;
@@ -50,7 +48,7 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
             }
 
             @Override
-            public void onCallbackQuery(CallbackQuery callbackQuery, Long chatId, Message message, BotExecutor botExecutor, Update update) {
+            public void onCallbackQuery(CallbackQuery callbackQuery, Long chatId, MaybeInaccessibleMessage message, BotExecutor botExecutor, Update update) {
                 for(Handler h : callbackQueryHandlers)
                     invoke(h, callbackQuery, chatId, message, botExecutor, update);
             }
