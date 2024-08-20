@@ -15,8 +15,7 @@ import wf.utils.telegram_bot_api.spring.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProcessor {
@@ -24,11 +23,12 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
 
     private final TelegramBot telegramBot;
 
-    private final ArrayList<Handler> messageHandlers = new ArrayList<>();
-    private final ArrayList<Handler> textMessageHandlers = new ArrayList<>();
-    private final ArrayList<Handler> callbackQueryHandlers = new ArrayList<>();
-    private final ArrayList<Handler> callbackInlineQueryHandlers = new ArrayList<>();
-    private final ArrayList<Handler> inlineQueryHandlers = new ArrayList<>();
+    private final List<Handler> messageHandlers = new ArrayList<>();
+    private final List<Handler> textMessageHandlers = new ArrayList<>();
+    private final List<Handler> callbackQueryHandlers = new ArrayList<>();
+    private final List<Handler> callbackInlineQueryHandlers = new ArrayList<>();
+    private final List<Handler> inlineQueryHandlers = new ArrayList<>();
+    private final Map<String, List<Handler>> commandHandler = new HashMap<>();
 
 
     @Lazy
@@ -38,6 +38,9 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
             @Override
             public void onTextMessage(String text, Long chatId, Message message, BotExecutor botExecutor, Update update) {
                 for(Handler h : textMessageHandlers)
+                    invoke(h, text, chatId, message, botExecutor, update);
+
+                for (Handler h : commandHandler.getOrDefault(text.toLowerCase(), Collections.emptyList()))
                     invoke(h, text, chatId, message, botExecutor, update);
             }
 
@@ -90,6 +93,10 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
 
                 if (method.isAnnotationPresent(TelegramBotInlineQueryHandler.class))
                     inlineQueryHandlers.add(new Handler(bean, method));
+
+                if (method.isAnnotationPresent(TelegramBotCommandHandler.class))
+                    commandHandler.computeIfAbsent(method.getAnnotation(TelegramBotCommandHandler.class).command().toLowerCase(),
+                            (k) -> new ArrayList<>()).add(new Handler(bean, method));
 
             }
         }
