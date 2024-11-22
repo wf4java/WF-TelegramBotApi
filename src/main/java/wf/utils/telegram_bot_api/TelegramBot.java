@@ -4,6 +4,7 @@ package wf.utils.telegram_bot_api;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -16,6 +17,8 @@ import wf.utils.telegram_bot_api.models.MessageHandler;
 
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Getter
 public class TelegramBot {
@@ -31,27 +34,34 @@ public class TelegramBot {
 
     private final BotSession botSession;
     private final BotExecutor botExecutor;
+    private final ExecutorService executorService;
 
     @Setter
     private boolean autoRestartOnFail;
-
     @Setter
     private ArrayList<MessageHandler> messageHandlers = new ArrayList<>();
+
+
 
     private boolean stopped = false;
 
 
 
-    @SneakyThrows
     public TelegramBot(String botUsername, String botToken) {
        this(botUsername, botToken, true);
     }
 
     @SneakyThrows
     public TelegramBot(String botUsername, String botToken, boolean autoRestartOnFail) {
+        this(new DefaultBotOptions(), botUsername, botToken, autoRestartOnFail);
+    }
+
+    @SneakyThrows
+    public TelegramBot(DefaultBotOptions defaultBotOptions, String botUsername, String botToken, boolean autoRestartOnFail) {
         this.botExecutor = new BotExecutor(botUsername, botToken, this::update, this::closing);
         this.botSession = api.registerBot(botExecutor);
         this.autoRestartOnFail = autoRestartOnFail;
+        this.executorService = Executors.newCachedThreadPool();
     }
 
     public void stop(){
@@ -114,7 +124,4 @@ public class TelegramBot {
         return messageHandlers.remove(messageHandler);
     }
 
-    public void setAutoRestartOnFail(boolean autoRestartOnFail) {
-        this.autoRestartOnFail = autoRestartOnFail;
-    }
 }

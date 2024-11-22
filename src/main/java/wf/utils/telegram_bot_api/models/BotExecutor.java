@@ -1,6 +1,8 @@
 package wf.utils.telegram_bot_api.models;
 
+import com.fasterxml.jackson.jaxrs.json.annotation.JSONP;
 import lombok.SneakyThrows;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -24,7 +26,11 @@ public class BotExecutor extends TelegramLongPollingBot {
 
 
     public BotExecutor(String botUsername, String botToken, Consumer<Update> updateHandler, Runnable closingHandler) {
-        super(botToken);
+        this(new DefaultBotOptions(), botUsername, botToken, updateHandler, closingHandler);
+    }
+
+    public BotExecutor(DefaultBotOptions defaultBotOptions, String botUsername, String botToken, Consumer<Update> updateHandler, Runnable closingHandler) {
+        super(defaultBotOptions, botToken);
         this.botUsername = botUsername;
         this.updateHandler = updateHandler;
         this.closingHandler = closingHandler;
