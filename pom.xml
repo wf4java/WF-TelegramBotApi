@@ -6,7 +6,7 @@
 
     <groupId>io.github.wf4java</groupId>
     <artifactId>WF-TelegramBotApi</artifactId>
-    <version>2.3.0</version>
+    <version>2.3.1</version>
     <packaging>jar</packaging>
 
 
@@ -172,7 +172,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
+            <version>1.18.34</version>
             <optional>true</optional>
             <scope>provided</scope>
         </dependency>
@@ -180,7 +180,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>6.1.1</version>
+            <version>6.1.14</version>
             <scope>provided</scope>
         </dependency>
 
@@ -191,5 +191,6 @@
             <version>6.9.7.1</version>
         </dependency>
     </dependencies>
+
 
 </project>

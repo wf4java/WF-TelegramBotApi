@@ -51,14 +51,14 @@ public class TelegramBot {
        this(botUsername, botToken, true);
     }
 
-    @SneakyThrows
+
     public TelegramBot(String botUsername, String botToken, boolean autoRestartOnFail) {
         this(new DefaultBotOptions(), botUsername, botToken, autoRestartOnFail);
     }
 
     @SneakyThrows
     public TelegramBot(DefaultBotOptions defaultBotOptions, String botUsername, String botToken, boolean autoRestartOnFail) {
-        this.botExecutor = new BotExecutor(botUsername, botToken, this::update, this::closing);
+        this.botExecutor = new BotExecutor(defaultBotOptions, botUsername, botToken, this::update, this::closing);
         this.botSession = api.registerBot(botExecutor);
         this.autoRestartOnFail = autoRestartOnFail;
         this.executorService = Executors.newCachedThreadPool();
