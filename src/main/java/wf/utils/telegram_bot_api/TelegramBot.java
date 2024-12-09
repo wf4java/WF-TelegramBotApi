@@ -17,8 +17,8 @@ import wf.utils.telegram_bot_api.models.MessageHandler;
 
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Map;
+import java.util.concurrent.*;
 
 @Getter
 public class TelegramBot {
@@ -36,10 +36,13 @@ public class TelegramBot {
     private final BotExecutor botExecutor;
     private final ExecutorService executorService;
 
+    private final int maxThreads;
+
     @Setter
     private boolean autoRestartOnFail;
     @Setter
     private ArrayList<MessageHandler> messageHandlers = new ArrayList<>();
+
 
 
 
@@ -58,10 +61,13 @@ public class TelegramBot {
 
     @SneakyThrows
     public TelegramBot(DefaultBotOptions defaultBotOptions, String botUsername, String botToken, boolean autoRestartOnFail) {
+        this.maxThreads = defaultBotOptions.getMaxThreads();
+        defaultBotOptions.setMaxThreads(2);
+
         this.botExecutor = new BotExecutor(defaultBotOptions, botUsername, botToken, this::update, this::closing);
         this.botSession = api.registerBot(botExecutor);
         this.autoRestartOnFail = autoRestartOnFail;
-        this.executorService = Executors.newCachedThreadPool();
+        this.executorService = new ThreadPoolExecutor(1, Math.max(maxThreads, 2), 120L, TimeUnit.SECONDS, new SynchronousQueue<>());
     }
 
     public void stop(){
@@ -88,32 +94,33 @@ public class TelegramBot {
 
 
     private void update(Update update) {
-        messageHandlers.forEach(h -> {h.onUpdate(update, botExecutor);});
+        executorService.submit(() -> {
+            messageHandlers.forEach(h -> {h.onUpdate(update, botExecutor);});
 
-        if(update.hasCallbackQuery()) {
-            CallbackQuery callbackQuery = update.getCallbackQuery();
-            if(callbackQuery.getMessage() != null)
-                messageHandlers.forEach(h -> {h.onCallbackQuery(update.getCallbackQuery(),
-                        update.getCallbackQuery().getMessage().getChatId(),
-                        update.getCallbackQuery().getMessage(), botExecutor, update);});
+            if(update.hasCallbackQuery()) {
+                CallbackQuery callbackQuery = update.getCallbackQuery();
+                if(callbackQuery.getMessage() != null)
+                    messageHandlers.forEach(h -> {h.onCallbackQuery(update.getCallbackQuery(),
+                            update.getCallbackQuery().getMessage().getChatId(),
+                            update.getCallbackQuery().getMessage(), botExecutor, update);});
 
-            else if(callbackQuery.getData()!= null)
-                messageHandlers.forEach(h -> {h.onCallbackInlineQuery(update.getCallbackQuery(),
-                        update.getCallbackQuery().getFrom().getId(),
-                        update.getCallbackQuery().getInlineMessageId(), botExecutor, update);});
-        }
+                else if(callbackQuery.getData()!= null)
+                    messageHandlers.forEach(h -> {h.onCallbackInlineQuery(update.getCallbackQuery(),
+                            update.getCallbackQuery().getFrom().getId(),
+                            update.getCallbackQuery().getInlineMessageId(), botExecutor, update);});
+            }
 
-        if(update.hasInlineQuery())
-            messageHandlers.forEach(h -> {h.onInlineQuery(update.getInlineQuery(), update.getInlineQuery().getFrom().getId(), botExecutor, update);});
+            if(update.hasInlineQuery())
+                messageHandlers.forEach(h -> {h.onInlineQuery(update.getInlineQuery(), update.getInlineQuery().getFrom().getId(), botExecutor, update);});
 
-        if(!update.hasMessage()) return;
+            if(!update.hasMessage()) return;
 
-        Message message = update.getMessage();
+            Message message = update.getMessage();
 
-        if(message.hasText() || (message.getCaption() != null && !message.getCaption().isEmpty()))
-            messageHandlers.forEach(h -> {h.onTextMessage((message.hasText() ? message.getText() : message.getCaption()),
-                    message.getChatId(), message, botExecutor, update);});
-
+            if(message.hasText() || (message.getCaption() != null && !message.getCaption().isEmpty()))
+                messageHandlers.forEach(h -> {h.onTextMessage((message.hasText() ? message.getText() : message.getCaption()),
+                        message.getChatId(), message, botExecutor, update);});
+        });
     }
 
     public boolean addHandler(MessageHandler messageHandler) {
