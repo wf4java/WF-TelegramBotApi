@@ -12,16 +12,19 @@ import wf.utils.telegram_bot_api.TelegramBot;
 import wf.utils.telegram_bot_api.models.BotExecutor;
 import wf.utils.telegram_bot_api.models.MessageHandler;
 import wf.utils.telegram_bot_api.spring.annotation.*;
+import wf.utils.telegram_bot_api.spring.annotation.handlers.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+
 
 @Getter
 public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProcessor {
 
 
     private final TelegramBot telegramBot;
+    private final String group;
 
     private final List<Handler> messageHandlers = new ArrayList<>();
     private final List<Handler> textMessageHandlers = new ArrayList<>();
@@ -33,7 +36,15 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
 
     @Lazy
     public TelegramBotMessageHandlerBeanPostProcessor(TelegramBot telegramBot) {
+        this(telegramBot, "default");
+    }
+
+
+    @Lazy
+    public TelegramBotMessageHandlerBeanPostProcessor(TelegramBot telegramBot, String group) {
         this.telegramBot = telegramBot;
+        this.group = group;
+
         telegramBot.addHandler(new MessageHandler() {
             @Override
             public void onTextMessage(String text, Long chatId, Message message, BotExecutor botExecutor, Update update) {
@@ -79,22 +90,22 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
         if (beanClass.isAnnotationPresent(TelegramBotController.class)) {
             Method[] methods = beanClass.getDeclaredMethods();
             for (Method method : methods) {
-                if (method.isAnnotationPresent(TelegramBotMessageHandler.class))
+                if (method.isAnnotationPresent(TelegramBotMessageHandler.class) && method.getAnnotation(TelegramBotMessageHandler.class).group().equals(group))
                     messageHandlers.add(new Handler(bean, method));
 
-                if (method.isAnnotationPresent(TelegramBotTextMessageHandler.class))
+                if (method.isAnnotationPresent(TelegramBotTextMessageHandler.class) && method.getAnnotation(TelegramBotTextMessageHandler.class).group().equals(group))
                     textMessageHandlers.add(new Handler(bean, method));
 
-                if (method.isAnnotationPresent(TelegramBotCallbackQueryHandler.class))
+                if (method.isAnnotationPresent(TelegramBotCallbackQueryHandler.class) && method.getAnnotation(TelegramBotCallbackQueryHandler.class).group().equals(group))
                     callbackQueryHandlers.add(new Handler(bean, method));
 
-                if (method.isAnnotationPresent(TelegramBotCallbackInlineQueryHandler.class))
+                if (method.isAnnotationPresent(TelegramBotCallbackInlineQueryHandler.class) && method.getAnnotation(TelegramBotCallbackInlineQueryHandler.class).group().equals(group))
                     callbackInlineQueryHandlers.add(new Handler(bean, method));
 
-                if (method.isAnnotationPresent(TelegramBotInlineQueryHandler.class))
+                if (method.isAnnotationPresent(TelegramBotInlineQueryHandler.class) && method.getAnnotation(TelegramBotInlineQueryHandler.class).group().equals(group))
                     inlineQueryHandlers.add(new Handler(bean, method));
 
-                if (method.isAnnotationPresent(TelegramBotCommandHandler.class))
+                if (method.isAnnotationPresent(TelegramBotCommandHandler.class) && method.getAnnotation(TelegramBotCommandHandler.class).group().equals(group))
                     commandHandler.computeIfAbsent(method.getAnnotation(TelegramBotCommandHandler.class).command().toLowerCase(),
                             (k) -> new ArrayList<>()).add(new Handler(bean, method));
 

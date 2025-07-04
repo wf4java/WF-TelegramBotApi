@@ -62,7 +62,6 @@ public class TelegramBot {
     @SneakyThrows
     public TelegramBot(DefaultBotOptions defaultBotOptions, String botUsername, String botToken, boolean autoRestartOnFail) {
         this.maxThreads = defaultBotOptions.getMaxThreads();
-        defaultBotOptions.setMaxThreads(2);
 
         this.botExecutor = new BotExecutor(defaultBotOptions, botUsername, botToken, this::update, this::closing);
         this.botSession = api.registerBot(botExecutor);

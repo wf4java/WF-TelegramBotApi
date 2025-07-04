@@ -1,4 +1,4 @@
-package wf.utils.telegram_bot_api.spring.annotation;
+package wf.utils.telegram_bot_api.spring.annotation.handlers;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,5 +10,7 @@ import java.lang.annotation.Target;
 public @interface TelegramBotCommandHandler {
 
     String command();
+
+    String group() default "default";
 
 }

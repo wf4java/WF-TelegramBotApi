@@ -38,3 +38,4 @@ build/
 .DS_Store
 /src/test/java/Test.java
 /.idea/markdown.xml
+/src/test/java/Test2.java
