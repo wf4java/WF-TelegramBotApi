@@ -122,6 +122,7 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
     }
 
 
+    @SuppressWarnings("CallToPrintStackTrace")
     private static void invoke(Handler handler, Object... objects) {
         Class<?>[] parameterTypes = handler.getMethod().getParameterTypes();
         List<Object> args = new ArrayList<>();
@@ -133,7 +134,7 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
         }
 
         try { handler.getMethod().invoke(handler.getObj(), args.toArray()); }
-        catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}
+        catch (Exception e) { e.printStackTrace(); }
     }
 
 
