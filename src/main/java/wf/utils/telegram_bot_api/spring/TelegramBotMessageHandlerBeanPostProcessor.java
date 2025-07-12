@@ -134,7 +134,8 @@ public class TelegramBotMessageHandlerBeanPostProcessor implements BeanPostProce
         }
 
         try { handler.getMethod().invoke(handler.getObj(), args.toArray()); }
-        catch (Exception e) { e.printStackTrace(); }
+        catch (IllegalAccessException | InvocationTargetException e) {throw new RuntimeException(e);}
+        catch (Exception e) {e.printStackTrace();}
     }
 
 
